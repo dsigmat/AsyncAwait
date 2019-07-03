@@ -8,6 +8,7 @@ namespace AsyncAwait
 {
     class Program
     {
+        public static object locker = new object();
         static void Main(string[] args)
         {
             #region thread
@@ -56,16 +57,19 @@ namespace AsyncAwait
 
         static bool SaveFile(string path)
         {
-            var rnd = new Random();
-            var txt = "";
-            for (int i = 0; i < 100; i++)
+            lock (locker)
             {
-                txt += rnd.Next();
+                var rnd = new Random();
+                var txt = "";
+                for (int i = 0; i < 100; i++)
+                {
+                    txt += rnd.Next();
+                }
             }
-
+            
             using (var sw = new StreamWriter(path, false, Encoding.UTF8))
             {
-                sw.WriteLine(txt);
+                sw.WriteLine();
             }
             return true;
         }
